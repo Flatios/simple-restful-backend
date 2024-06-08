@@ -1,37 +1,44 @@
 import { Database } from "../utils/function";
 import { Time } from "../utils/function";
 
-interface user {
+export interface userInterface {
     _id?: string;
     username?: string;
     email?: string;
     password?: string;
-    verified?: boolean;
+    verified?: number;
     createdAt?: string;
 }
 
-export const allUser = (): Promise<user | null> => {
-    const query = Database.createQuery(`SELECT * FROM users`);
+export const allUser = async(): Promise<userInterface | null> => {
+    const [ query ] = await Database.createQuery(`SELECT * FROM users`);
     return query[0]? Promise.resolve(query[0]) : Promise.resolve(null);
 }
 
-export const getUser = (fields: user): Promise<user | null> => {
-    const query = Database.createQuery(`SELECT * FROM users WHERE ?`, [Database.fieldsToQuery(fields)]);
-    return query[0]? Promise.resolve(query[0]) : Promise.resolve(null);
+export const getUser = async (fields: userInterface): Promise<userInterface | false> => {
+    const [ query ] = await Database.createQuery(`SELECT * FROM users WHERE ${Database.fieldsToQuery(fields)}`);
+    if (query[0]) {
+        return Promise.resolve(query[0]);
+    } else {
+        return Promise.resolve(false);
+    }
 }
 
-export const createUser = async (fields: user): Promise<user | null> => {
+export const createUser = async (fields: userInterface): Promise<userInterface | null> => {
     const colums = "_id, username, email, password, verified, createdAt";
-    const query = await Database.createQuery(`INSERT INTO users (${colums}) VALUES ( ?, ?, ?, ?, ?, ${Time.getCurrentDate()} )`, Object.values(fields));
+    fields.createdAt = Time.getCurrentDate();
+
+    const [ query ] = await Database.createQuery(`INSERT INTO users (${colums}) VALUES ( ?, ?, ?, ?, ?, ?)`, Object.values(fields));
+    return query["affectedRows"] === 1 ? Promise.resolve(query) : Promise.resolve(null)
+}
+
+export const deleteUser = async (id: string): Promise<userInterface | null> => {
+    const [ query ] = await Database.createQuery(`DELETE FROM users WHERE _id = ?`, [id]);
     return query["affectedRows"] === 1 ? Promise.resolve(query) : Promise.resolve(null);
 }
 
-export const deleteUser = (id: string): Promise<user | null> => {
-    const query = Database.createQuery(`DELETE FROM users WHERE _id = ?`, [id]);
-    return query["affectedRows"] === 1 ? Promise.resolve(query) : Promise.resolve(null);
-}
-
-export const updateUser = async (fields: user, findUser: user): Promise<user | null> => {
-    const query = Database.createQuery( `UPDATE users SET ${Database.fieldsToQuery(fields).trim()} WHERE ${Database.fieldsToQuery(findUser).trim()}`, [] );
+export const updateUser = async (fields: userInterface, findUser: userInterface): Promise<userInterface | null> => {
+    const [ query ] = await Database.createQuery( 
+        `UPDATE users SET ${Database.fieldsToQuery(fields).trim()} WHERE ${Database.fieldsToQuery(findUser).trim()}`);
     return query["affectedRows"] === 1 ? Promise.resolve(query) : Promise.resolve(null);
 }

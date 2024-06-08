@@ -11,7 +11,7 @@ const pool = createConnection({
 pool.connect(function (err: Error) {
     if (err) throw err;
 
-    console.log('Connection pool succesfully created');
+    console.log('Database connection pool succesfully created');
 });
 
 export default pool.promise();

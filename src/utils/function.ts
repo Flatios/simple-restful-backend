@@ -1,59 +1,79 @@
-import { scrypt, randomBytes, timingSafeEqual } from "crypto";
-import { promisify } from "util";
-import jsonwebtoken from "jsonwebtoken";
 import pool from "./database";
+import jsonwebtoken from "jsonwebtoken";
+import bcrypt from 'bcrypt';
 
-const scryptAsync = promisify(scrypt);
+export interface otpInterface {
+    _id?: string;
+    otp?: string;
+    createdAt?: string;
+    expiresAt?: string;
+}
 
 // Generator
 export class Generator {
-    static uuid = () => {
-        const timestamp = Date.now().toString(16);
-        const randomPart = () => Math.random().toString(16).slice(2, 6);
-        return `${randomPart()}${randomPart()}-${randomPart()}-${randomPart()}-${randomPart()}-${randomPart()}${timestamp}`;
-    }
-    static random = (list: string[]) => {
-        return list[Math.floor[Math.random() * list.length]];
-    }
+    static uuid = () => {
+        const timestamp = Date.now().toString(16);
+        const randomPart = () => Math.random().toString(16).slice(2, 6);
+        return `${randomPart()}${randomPart()}-${randomPart()}-${randomPart()}-${randomPart()}-${randomPart()}${timestamp}`;
+    }
+    static random = (list: string[]) => {
+        return list[Math.floor[Math.random() * list.length]];
+    }
+
+    static otp = () => {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
 }
 
 // JWT Functions
 export class Jwt {
-    static createToken = ( id: string, options={ expiresIn: "1h" } ) => { 
-        return jsonwebtoken.sign({ id }, process.env.SECRET_TOKEN, options); 
-    }
-    static verifyToken = ( token: string ) => { 
-        return jsonwebtoken.verify(token, process.env.SECRET_TOKEN); 
-    }
+    static createToken = ( id: string, options={ expiresIn: "1h" } ) => { 
+        return jsonwebtoken.sign({ id }, process.env.SECRET_TOKEN, options); 
+    }
+    static verifyToken = ( token: string ) => { 
+        return jsonwebtoken.verify(token, process.env.SECRET_TOKEN); 
+    }
 }
 
 // Hash Functions
 export class Hash {
-    static createHash = async ( text: string ) => {
-        const salt = randomBytes(Number(process.env.HASH_SALT)).toString("hex");
-        const buffer = (await scryptAsync(text, salt, 64)) as Buffer;
-        return `${buffer.toString("hex")}.${salt}`;
-    }
-    static verifyHash = async ( hashed: string, text: string ) => {
-        const hashedPasswordBuf = Buffer.from(hashed, "hex");
-        const suppliedPasswordBuf = (await scryptAsync(text, process.env.HASH_SALT, 64)) as Buffer;
-        return timingSafeEqual(hashedPasswordBuf, suppliedPasswordBuf);
-    }
+    static async createHash(text: string, saltRounds = 10): Promise<string> {
+        try {
+            const salt = await bcrypt.genSalt(saltRounds);
+            const hash = await bcrypt.hash(text, salt);
+            return hash;
+        } catch (err) {
+            throw new Error(err);
+        }
+    }
+
+    static async verifyHash(text: string, hashed: string): Promise<boolean> {
+        try {
+            const result = await bcrypt.compare(text, hashed);
+            return result;
+        } catch (err) {
+            throw new Error(err);
+        }
+    }
 }
 
 // Time Functions
 export class Time {
-    static getCurrentDate = () => {
-        return new Date().toISOString().slice(0, 10);
-    }
-    static HoursToDate = (duration: number) => {
-        return (Date.now() + 3600000 * + duration).toString();
-    }
+    static getCurrentDate = () => {
+        return new Date().toISOString().slice(0, 10);
+    }
+    static HoursToDate = (duration: number) => {
+        return (Date.now() + 3600000 * + duration).toString();
+    }
 }
 
 // Database Functions 
 export class Database {
-    static fieldsToQuery = (fields: any) => Object.entries(fields).map(([key, value]) => `${key} = '${value}'` ).join(', ');
-    static createQuery = async (query: string, values?: string[]) => await pool.query(query, values);
+    static fieldsToQuery = (fields: any) => Object.entries(fields).map(([key, value]) => `${key} = '${value}'` ).join(', ');
+    static createQuery = async (query: string, values?: string[]) => await pool.query(query, values);
+    static getNumberInTable = async (query: string) => {
+        
+    }
 }
 
+// 

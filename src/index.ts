@@ -4,6 +4,7 @@ import cors from 'cors';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 
 // Initialize the Express app
 const app: Express = express();
@@ -14,10 +15,19 @@ const routes = ['user'];
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser())
 app.use(compression({ level: 6 }));
 app.use(bodyParser.json({ limit: '30mb' }));
 
-//X
+declare module "express" { 
+  export interface Request {
+    user: any
+  }
+  export interface Response {
+    user: any
+  }
+}
+
 // Load routes dynamically
 const loadRoutes = async () => {
   try {
