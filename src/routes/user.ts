@@ -7,7 +7,7 @@ const router: Router = Router();
 // Authentication
 router.post("/user/register", Register);
 router.post("/user/login", Login);
-router.post("/user/logout", LogOut);
+router.post("/user/logout", authorization, LogOut);
 
 
 export default router;
