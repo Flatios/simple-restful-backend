@@ -22,10 +22,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 declare module "express" { 
   export interface Request {
-    user: any
+    userID?: string;
+    user?: any
   }
   export interface Response {
-    user: any
+    userID?: string;
+    user?: any
   }
 }
 
@@ -44,4 +46,5 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   loadRoutes();
 });
+
 

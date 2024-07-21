@@ -1,5 +1,5 @@
-import { Database } from "../utils/function";
-import { Time } from "../utils/function";
+import { Database } from "../utils/functions";
+import { Time } from "../utils/functions";
 
 export interface userInterface {
     _id?: string;
