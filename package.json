@@ -1,44 +1,44 @@
 {
-  "name": "simple-restful-backend",
+  "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
-  "proxy": "http://localhost:5173",
+  "main": "app.js",
+  "type": "module",
   "scripts": {
-    "start": "npx tsx ./src/index.ts",
-    "dev": "nodemon"
+    "start": "node ./src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "echo 'No tests specified' && exit 0"
   },
-  "keywords": [],
+  "keywords": [
+    "rest",
+    "backend",
+    "express"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.2",
-    "compression": "^1.7.4",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "eslint": "^9.3.0",
     "express": "^4.19.1",
+    "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.7",
-    "nodemailer": "^6.9.13"
+    "winston": "^3.13.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.7.0",
     "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.7.5",
-    "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
+    "@types/eslint__js": "^8.42.3",
     "@types/express": "^4.17.21",
-    "@types/express-session": "^1.18.0",
-    "@types/jsonwebtoken": "^9.0.6",
     "@types/morgan": "^1.9.9",
-    "@types/mysql": "^2.15.26",
-    "@types/node": "^20.12.8",
+    "@types/mysql2": "github:types/mysql2",
+    "@types/node": "^20.14.12",
     "@types/nodemailer": "^6.4.15",
-    "nodemon": "^2.0.19",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "eslint": "^9.7.0",
+    "globals": "^15.8.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^2.8.8"
   }
 }
