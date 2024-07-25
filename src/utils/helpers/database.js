@@ -1,4 +1,4 @@
-import pool from "../database.js";
+import pool from "../../config/database.config.js";
 
 /**
  * Generates a SET clause for SQL UPDATE queries.
@@ -23,6 +23,23 @@ function generateWhereClause(criteria, conjunction = 'AND') {
         throw new Error('Criteria parameter must be an object');
     }
     return Object.keys(criteria).map(key => `${key} = ?`).join(` ${conjunction} `);
+}
+
+/**
+ * finds a all record in a table.
+ * @param {string} tableName - The table name.
+ * @returns {Promise<Object|null>} - The found record or null if not found.
+ */
+async function findAll(tableName) {
+    const query = `SELECT * FROM ${tableName}`;
+
+    try {
+        const [results] = await pool.query(query);
+        return results.length > 0 ? results[0] : null;
+    } catch (e) {
+        console.error('Error finding record:', e.message);
+        throw new Error('Failed to find record: ' + e.message);
+    }
 }
 
 /**
@@ -109,8 +126,9 @@ async function deleteOne(tableName, criteria) {
 }
 
 export default {
+    findAll,
+    findOne,
     insertOne,
     updateOne,
     deleteOne,
-    findOne,
 };
