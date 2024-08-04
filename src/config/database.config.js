@@ -1,22 +1,19 @@
 import mysql from 'mysql2/promise';
-import config from './config';
+import config from './config.js';
 
-// MySQL connection pool configuration
-const pool = mysql.createPool({
-    ...config.database,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-});
+const pool = mysql.createPool(config.database);
 
-async function testConnection() {
+async function checkConnection() {
     let connection;
     try {
         connection = await pool.getConnection();
-        await connection.query('SELECT 1');
-        console.log('Database connection pool successfully created and tested.');
-    } catch (error) {
-        console.error('Error creating or testing database connection pool:', error.message);
+        console.log('Successfully connected to the database.');
+    } catch (err) {
+        if (err.code === 'ECONNREFUSED') {
+            console.error('Database connection refused. Make sure the database server is running.');
+            process.exit(1);
+        }
+        console.error('Error connecting to the database:', err);
     } finally {
         if (connection) {
             connection.release();
@@ -24,8 +21,21 @@ async function testConnection() {
     }
 }
 
-testConnection().catch(error => {
-    console.error('Unexpected error during connection test:', error);
+checkConnection().catch(err => {
+    console.error('Unexpected error:', err);
+    process.exit(0)
+});
+
+process.on('SIGINT', async () => {
+    console.log('Closing database connection pool...');
+    await pool.end();
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    console.log('Closing database connection pool...');
+    await pool.end();
+    process.exit(0);
 });
 
 export default pool;

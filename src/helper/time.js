@@ -39,5 +39,5 @@ export default {
     getCurrentTime,
     getDayOfWeek,
     getMonthName,
-    formatDate,
+    formatDate
 };

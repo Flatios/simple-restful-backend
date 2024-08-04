@@ -1,3 +1,4 @@
+import logger from '../config/logger.config.js'; 
 export default (err, req, res, next) => {
     logger.error({
         message: err.message,

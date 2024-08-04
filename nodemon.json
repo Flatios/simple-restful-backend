@@ -1,7 +1,6 @@
 {
-  "watch": ["src", ".env", "nodemon.json"],
+  "watch": ["src"],
   "ext": ".js,.json",
   "ignore": ["src/**/*.test.js", "node_modules"],
-  "delay": 3000,
   "exec": "node ./src/app.js"
 }
